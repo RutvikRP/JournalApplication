@@ -13,7 +13,11 @@ public class Journal {
     private ObjectId id;
     @NonNull
     private String title;
+
+
+
     private String content;
+    private Sentiment sentiment;
     private LocalDate date;
     public ObjectId getId() {
         return id;
@@ -46,12 +50,19 @@ public class Journal {
     public void setDate(LocalDate date) {
         this.date = date;
     }
+    public Sentiment getSentiment() {
+        return sentiment;
+    }
 
-    public Journal(ObjectId id, @NonNull String title, String content, LocalDate date) {
+    public void setSentiment(Sentiment sentiment) {
+        this.sentiment = sentiment;
+    }
+    public Journal(ObjectId id, @NonNull String title, String content, LocalDate date,Sentiment sentiment) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.date = date;
+        this.sentiment = sentiment;
     }
 
     public Journal(){

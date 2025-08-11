@@ -1,2 +1,7 @@
-package com.rutvik.journalAppWithAuth.entity;public class Sentiment {
+package com.rutvik.journalAppWithAuth.entity;
+
+public enum Sentiment {
+    Good,
+    Bad,
+    Average,
 }
