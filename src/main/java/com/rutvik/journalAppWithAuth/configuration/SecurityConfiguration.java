@@ -1,5 +1,6 @@
 package com.rutvik.journalAppWithAuth.configuration;
 
+import com.rutvik.journalAppWithAuth.Filter.JwtFilter;
 import com.rutvik.journalAppWithAuth.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,38 +13,39 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Autowired
     private UserSecurityService userSecurityService;
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity https) throws Exception {
-        https.authorizeHttpRequests(req -> req.requestMatchers("/journal/").authenticated()
+        https.authorizeHttpRequests(req -> req.requestMatchers("/journal/**").authenticated()
                 .requestMatchers("/user/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
         );
-        https.httpBasic(Customizer.withDefaults());
         https.csrf(csrf -> csrf.disable());
+        https.sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        https.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return https.build();
     }
 
-    //    @Autowired
-//    public void config(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//        authenticationManagerBuilder.userDetailsService(userSecurityService).passwordEncoder(BcryptePasswordEncoder());
-//    }
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userSecurityService);
-        authenticationProvider.setPasswordEncoder(BcryptePasswordEncoder());
+        authenticationProvider.setPasswordEncoder(bcryptePasswordEncoder());
         return authenticationProvider;
     }
 
@@ -53,7 +55,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public PasswordEncoder BcryptePasswordEncoder() {
+    public PasswordEncoder bcryptePasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

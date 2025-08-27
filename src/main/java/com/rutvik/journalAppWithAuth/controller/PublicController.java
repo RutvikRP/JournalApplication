@@ -1,5 +1,6 @@
 package com.rutvik.journalAppWithAuth.controller;
 
+import com.rutvik.journalAppWithAuth.entity.LoginRequest;
 import com.rutvik.journalAppWithAuth.entity.User;
 import com.rutvik.journalAppWithAuth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,12 @@ public class PublicController {
     public String getOk(){
         return "ok";
     }
-    @PostMapping("/create-user")
-    public ResponseEntity<?> createUser(@RequestBody User user){
-        return userService.createUser(user);
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@RequestBody User user){
+        return userService.signUp(user);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+        return userService.login(loginRequest);
     }
 }
